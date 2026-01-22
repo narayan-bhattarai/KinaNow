@@ -5,9 +5,9 @@ spring:
   application:
     name: auth-service
   datasource:
-    url: jdbc:postgresql://localhost:5432/kinanow_db
+    url: jdbc:postgresql://localhost:5432/KinaNow
     username: postgres
-    password: postgres
+    password: admin
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:

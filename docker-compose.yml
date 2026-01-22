@@ -11,14 +11,14 @@ services:
       - "5432:5432"
     environment:
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=kinanow_db
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=KinaNow
     volumes:
       - postgres-data:/var/lib/postgresql/data
     networks:
       - kinanow-net
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -77,7 +77,6 @@ services:
       - "9411:9411"
     networks:
       - kinanow-net
-
   # ------------------------------------------------------------
   # OPTIONAL TOOLING
   # ------------------------------------------------------------
