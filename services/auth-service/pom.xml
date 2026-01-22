@@ -12,7 +12,7 @@
 
     <artifactId>auth-service</artifactId>
     <name>auth-service</name>
-    <description>Authentication & Authorization Service</description>
+    <description>Authentication &amp; Authorization Service</description>
 
     <dependencies>
         <dependency>
