@@ -2,7 +2,7 @@
 setlocal
 
 echo ==================================================
-echo 🛠️ KinaNow Smart Setup & Launcher
+echo 🛠️ KinaNow Smart Setup ^& Launcher
 echo ==================================================
 
 REM 1. Check Java
@@ -43,6 +43,7 @@ if %errorlevel% equ 0 (
     call mvn clean install -DskipTests
 ) else (
     echo [INFO] Maven not found locally. Using Docker to build (Portable Mode)...
+    echo This might take a few minutes to download the Maven image...
     docker run --rm -v "%cd%":/app -w /app maven:3.9-eclipse-temurin-17 mvn clean install -DskipTests
 )
 
@@ -54,7 +55,7 @@ if %errorlevel% neq 0 (
 
 REM 4. Start Infrastructure
 echo.
-echo [INFRA] Starting Database & Message Broker...
+echo [INFRA] Starting Database ^& Message Broker...
 docker-compose up -d
 
 REM 5. Run Microservices
@@ -75,7 +76,7 @@ echo [FRONTEND] Starting Angular App...
 cd frontend/kinanow-angular
 if not exist node_modules (
     echo Installing dependencies...
-    call npm install
+    call npm install --legacy-peer-deps
 )
 call npm start
 
