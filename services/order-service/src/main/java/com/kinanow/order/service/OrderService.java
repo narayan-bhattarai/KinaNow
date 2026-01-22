@@ -23,54 +23,55 @@ import java.util.stream.Collectors;
 @Slf4j
 public class OrderService {
 
-    private final OrderRepository orderRepository;
-    private final KafkaTemplate<String, OrderPlacedEvent> kafkaTemplate;
+        private final OrderRepository orderRepository;
+        private final KafkaTemplate<String, OrderPlacedEvent> kafkaTemplate;
 
-    public String placeOrder(Long userId, OrderRequest orderRequest) {
-        String orderNumber = UUID.randomUUID().toString();
-        
-        List<OrderItem> orderItems = orderRequest.getItems().stream()
-                .map(this::mapToDto)
-                .collect(Collectors.toList());
-        
-        BigDecimal totalAmount = orderItems.stream()
-                .map(item -> item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        public String placeOrder(Long userId, OrderRequest orderRequest) {
+                String orderNumber = UUID.randomUUID().toString();
 
-        Order order = Order.builder()
-                .orderNumber(orderNumber)
-                .userId(userId)
-                .orderItems(orderItems)
-                .totalAmount(totalAmount)
-                .status(OrderStatus.CREATED)
-                .build();
+                List<OrderItem> orderItems = orderRequest.getItems().stream()
+                                .map(this::mapToDto)
+                                .collect(Collectors.toList());
 
-        orderRepository.save(order);
-        
-        // Publish Event to Kafka
-        OrderPlacedEvent event = OrderPlacedEvent.builder()
-                .orderNumber(order.getOrderNumber())
-                .userId(order.getUserId())
-                .totalAmount(order.getTotalAmount())
-                .email("user@example.com") // Placeholder, fetch from User Service/Auth context
-                .build();
-                
-        kafkaTemplate.send("kinanow-order-events", event);
-        log.info("Order placed successfully: {}", orderNumber);
-        
-        return orderNumber;
-    }
-    
-    public List<Order> getOrders(Long userId) {
-        return orderRepository.findByUserId(userId);
-    }
+                BigDecimal totalAmount = orderItems.stream()
+                                .map(item -> item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
+                                .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-    private OrderItem mapToDto(com.kinanow.order.dto.OrderItemDto itemDto) {
-        return OrderItem.builder()
-                .price(itemDto.getPrice())
-                .quantity(itemDto.getQuantity())
-                .skuCode(itemDto.getSkuCode())
-                .productId(itemDto.getProductId())
-                .build();
-    }
+                Order order = Order.builder()
+                                .orderNumber(orderNumber)
+                                .userId(userId)
+                                .orderItems(orderItems)
+                                .totalAmount(totalAmount)
+                                .status(OrderStatus.CREATED)
+                                .build();
+
+                orderRepository.save(order);
+
+                // Publish Event to Kafka
+                OrderPlacedEvent event = OrderPlacedEvent.builder()
+                                .orderNumber(order.getOrderNumber())
+                                .userId(order.getUserId())
+                                .totalAmount(order.getTotalAmount())
+                                .email("user@example.com") // Placeholder, fetch from User Service/Auth context
+                                .items(orderRequest.getItems())
+                                .build();
+
+                kafkaTemplate.send("kinanow-order-events", event);
+                log.info("Order placed successfully: {}", orderNumber);
+
+                return orderNumber;
+        }
+
+        public List<Order> getOrders(Long userId) {
+                return orderRepository.findByUserId(userId);
+        }
+
+        private OrderItem mapToDto(com.kinanow.order.dto.OrderItemDto itemDto) {
+                return OrderItem.builder()
+                                .price(itemDto.getPrice())
+                                .quantity(itemDto.getQuantity())
+                                .skuCode(itemDto.getSkuCode())
+                                .productId(itemDto.getProductId())
+                                .build();
+        }
 }

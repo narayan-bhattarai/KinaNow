@@ -80,6 +80,7 @@ start "Auth Service" java -jar services/auth-service/target/auth-service-1.0.0-S
 start "Catalog Service" java -jar services/catalog-service/target/catalog-service-1.0.0-SNAPSHOT.jar
 start "Cart Service" java -jar services/cart-service/target/cart-service-1.0.0-SNAPSHOT.jar
 start "Order Service" java -jar services/order-service/target/order-service-1.0.0-SNAPSHOT.jar
+start "Inventory Service" java -jar services/inventory-service/target/inventory-service-1.0.0-SNAPSHOT.jar
 
 REM --- 6. Start Frontend ---
 echo.
