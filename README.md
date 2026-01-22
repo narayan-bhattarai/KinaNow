@@ -121,4 +121,4 @@ Access the app at `http://localhost:4200`
 *   `kinanow-notification-events`: SendEmail, SendSms
 
 ---
-**Author**: Antigravity (Google Deepmind)
+**Author**: Narayan Bhattarai
