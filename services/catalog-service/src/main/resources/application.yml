@@ -1,0 +1,9 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: catalog-service
+  data:
+    mongodb:
+      uri: mongodb://mongoadmin:mongopass@localhost:27017/kinanow_catalog?authSource=admin
