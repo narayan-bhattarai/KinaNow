@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.util.UUID;
 
 @Data
 @Builder
@@ -15,4 +16,14 @@ public class AuthenticationResponse {
     private String accessToken;
     @JsonProperty("refresh_token")
     private String refreshToken;
+    @JsonProperty("user_id")
+    private UUID userId;
+    @JsonProperty("role")
+    private String role;
+    @JsonProperty("full_name")
+    private String fullName;
+    @JsonProperty("merchant_id")
+    private UUID merchantId;
+    @JsonProperty("email")
+    private String email;
 }

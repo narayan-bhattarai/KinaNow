@@ -7,14 +7,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class OrderPlacedEvent {
-    private String orderNumber;
-    private Long userId;
+    private String knOrderId;
+    private UUID userId;
     private BigDecimal totalAmount;
     private String email;
     private List<OrderItemDto> items;

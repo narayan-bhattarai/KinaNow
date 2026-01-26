@@ -16,24 +16,26 @@ import java.time.LocalDateTime;
 public class PaymentService {
 
     private final PaymentRepository paymentRepository;
+    private final org.springframework.kafka.core.KafkaTemplate<String, Object> kafkaTemplate;
 
     @KafkaListener(topics = "kinanow-order-events")
     public void processPayment(OrderPlacedEvent event) {
-        log.info("Processing payment for Order: {}, Amount: {}", event.getOrderNumber(), event.getTotalAmount());
-        
+        log.info("Processing payment for Order: {}, Amount: {}", event.getKnOrderId(), event.getTotalAmount());
+
         // MOCK PAYMENT LOGIC: Always succeed for MVP
         Payment payment = Payment.builder()
-                .orderNumber(event.getOrderNumber())
+                .knOrderId(event.getKnOrderId())
                 .userId(event.getUserId())
                 .amount(event.getTotalAmount())
                 .status("SUCCESS")
                 .paymentDate(LocalDateTime.now())
                 .build();
-        
+
         paymentRepository.save(payment);
-        
-        log.info("Payment Successful for Order: {}", event.getOrderNumber());
-        
-        // TODO: Publish PaymentSucceededEvent for Order Service to complete order status
+
+        log.info("Payment Successful for Order: {}", event.getKnOrderId());
+
+        kafkaTemplate.send("kinanow-payment-events",
+                new com.kinanow.payment.event.PaymentSucceededEvent(event.getKnOrderId()));
     }
 }

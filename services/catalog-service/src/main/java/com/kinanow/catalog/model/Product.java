@@ -20,7 +20,17 @@ public class Product {
     private String name;
     private String description;
     private BigDecimal price;
+    private BigDecimal previousPrice;
+    private Integer stock;
+    private String occasion;
     private String category; // Simplify for now, could be separate collection
     private String imageUrl;
     private boolean active;
+    private Long merchantId;
+    private String type;
+    private String model;
+
+    // Dynamic attributes for specific product types (e.g. { "screenSize": "6.7",
+    // "color": "Titanium" } or { "variety": "Roma", "organic": true })
+    private java.util.Map<String, Object> specifications;
 }

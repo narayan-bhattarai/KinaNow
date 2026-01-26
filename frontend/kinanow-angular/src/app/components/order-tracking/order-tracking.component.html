@@ -1,0 +1,47 @@
+<div class="bg-gray-50 min-h-screen py-12">
+    <div class="container mx-auto px-4 max-w-4xl">
+        <div class="text-center mb-10">
+            <h1 class="text-3xl font-bold text-gray-900">Track Your Order</h1>
+            <p class="text-gray-500 mt-2">Order ID: <span class="font-mono font-medium text-blue-600">{{ orderId
+                    }}</span></p>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-8 md:p-12">
+            <!-- Stepper -->
+            <div class="relative flex items-center justify-between mb-8 w-full">
+                <!-- Connecting Line -->
+                <div class="absolute left-0 top-1/2 transform -translate-y-1/2 w-full h-1 bg-gray-200 -z-10"></div>
+                <div class="absolute left-0 top-1/2 transform -translate-y-1/2 h-1 bg-green-500 transition-all duration-1000 -z-10"
+                    [style.width.%]="(currentStep - 1) / (steps.length - 1) * 100"></div>
+
+                <!-- Steps -->
+                <div *ngFor="let step of steps; let i = index" class="flex flex-col items-center relative">
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500 z-10"
+                        [ngClass]="{
+                            'bg-green-500 text-white scale-110 shadow-lg': i + 1 <= currentStep,
+                            'bg-gray-200 text-gray-400': i + 1 > currentStep
+                         }">
+                        <span *ngIf="i + 1 < currentStep">✓</span>
+                        <span *ngIf="i + 1 >= currentStep">{{ i + 1 }}</span>
+                    </div>
+                    <div class="absolute top-12 w-32 text-center">
+                        <p class="text-sm font-semibold"
+                            [ngClass]="{'text-gray-900': i + 1 <= currentStep, 'text-gray-400': i + 1 > currentStep}">{{
+                            step.label }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Current Status Box -->
+            <div class="mt-16 bg-blue-50 border border-blue-100 rounded-lg p-6 text-center animate-fade-in-up">
+                <h3 class="text-xl font-bold text-blue-900 mb-2">{{ steps[currentStep - 1].label }}</h3>
+                <p class="text-blue-700">{{ steps[currentStep - 1].description }}</p>
+            </div>
+
+            <div class="mt-8 text-center">
+                <a routerLink="/" class="text-blue-600 hover:text-blue-800 font-medium hover:underline">Continue
+                    Shopping</a>
+            </div>
+        </div>
+    </div>
+</div>

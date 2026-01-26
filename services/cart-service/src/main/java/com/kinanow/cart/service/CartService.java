@@ -35,7 +35,7 @@ public class CartService {
     @Transactional
     public Cart addToCart(Long userId, AddToCartRequest request) {
         Cart cart = getCart(userId);
-        
+
         Optional<CartItem> existingItem = cart.getItems().stream()
                 .filter(item -> item.getProductId().equals(request.getProductId()))
                 .findFirst();
@@ -64,7 +64,23 @@ public class CartService {
         cart.getItems().removeIf(item -> item.getProductId().equals(productId));
         return cartRepository.save(cart);
     }
-    
+
+    @Transactional
+    public Cart updateQuantity(Long userId, String productId, Integer quantity) {
+        Cart cart = getCart(userId);
+        cart.getItems().stream()
+                .filter(item -> item.getProductId().equals(productId))
+                .findFirst()
+                .ifPresent(item -> {
+                    if (quantity <= 0) {
+                        cart.getItems().remove(item);
+                    } else {
+                        item.setQuantity(quantity);
+                    }
+                });
+        return cartRepository.save(cart);
+    }
+
     @Transactional
     public void clearCart(Long userId) {
         Cart cart = getCart(userId);

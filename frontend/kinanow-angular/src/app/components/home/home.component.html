@@ -1,0 +1,145 @@
+<!-- PREMIUM HERO SECTION -->
+<div class="relative bg-white overflow-hidden mb-16 pt-12 pb-24">
+    <div class="container mx-auto px-6 lg:px-12 relative z-10">
+        <div class="max-w-3xl">
+            <div
+                class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-blue-50 text-blue-600 border border-blue-100/50 mb-6">
+                <span class="flex h-2 w-2 rounded-full bg-blue-600 animate-pulse"></span>
+                <span class="text-[10px] font-black uppercase tracking-[0.2em]">New Season Collection</span>
+            </div>
+
+            <h1 class="text-5xl md:text-7xl font-black text-slate-950 leading-[0.95] mb-8 tracking-tighter">
+                Elevate your <br />
+                <span class="text-gradient">Daily Essential</span>
+            </h1>
+
+            <p class="text-lg text-slate-500 max-w-lg mb-12 leading-relaxed font-medium">
+                Experience the finest selection of global brands, curated for the modern minimalist. Fast shipping,
+                secure payments, and premium support.
+            </p>
+
+            <div class="flex flex-wrap gap-4">
+                <button
+                    class="btn-premium bg-slate-950 text-white hover:bg-black hover:shadow-2xl hover:shadow-slate-950/20 group">
+                    Start Shopping
+                    <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                            d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                </button>
+                <button class="btn-premium bg-white text-slate-900 border border-slate-200 hover:bg-slate-50">
+                    Collections
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Abstract Decorative Elements -->
+    <div class="absolute top-0 right-0 w-2/3 h-full bg-mesh -mr-20 pointer-events-none opacity-40"></div>
+    <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-blue-400/10 rounded-full blur-[120px]"></div>
+    <div class="absolute top-12 left-1/2 w-64 h-64 bg-indigo-400/5 rounded-full blur-[100px] animate-float"></div>
+</div>
+
+<div class="container mx-auto px-6 lg:px-12 pb-20">
+    <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4 border-b border-slate-100 pb-8">
+        <div>
+            <h2 class="text-3xl font-black text-slate-950 tracking-tight mb-2">Editor's Choice</h2>
+            <p class="text-sm font-medium text-slate-400">Selected premium products from our top-tier merchants</p>
+        </div>
+        <div class="flex items-center space-x-2">
+            <button
+                class="px-4 py-2 text-xs font-black text-slate-400 uppercase tracking-widest hover:text-blue-600 transition">Latest</button>
+            <button
+                class="px-4 py-2 text-xs font-black text-blue-600 border border-blue-100 bg-blue-50/50 rounded-xl uppercase tracking-widest">Popular</button>
+        </div>
+    </div>
+
+    <div *ngIf="loading" class="flex justify-center items-center py-32">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 shadow-xl shadow-blue-100"></div>
+    </div>
+
+    <!-- REFINED GRID -->
+    <div *ngIf="!loading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+        <div *ngFor="let product of products"
+            class="group bg-white rounded-3xl border border-slate-100 flex flex-col h-full hover-lift card-shadow p-4 overflow-hidden">
+
+            <!-- Image Container (Strict Geometry) -->
+            <div class="aspect-square bg-slate-50/50 rounded-2xl relative mb-6 overflow-hidden flex items-center justify-center p-8 cursor-pointer transition-colors group-hover:bg-white"
+                [routerLink]="['/shop', product.id || '']">
+                <img *ngIf="product.imageUrl" [src]="product.imageUrl" [alt]="product.name"
+                    class="max-h-full max-w-full object-contain transition-transform duration-700 group-hover:scale-110 drop-shadow-2xl">
+                <span *ngIf="!product.imageUrl" class="text-5xl opacity-20">📦</span>
+
+
+                <!-- Top Badges -->
+                <div class="absolute top-3 left-3 flex flex-col gap-2">
+                    <span *ngIf="product.previousPrice && product.price < product.previousPrice"
+                        class="px-2.5 py-1 rounded-lg bg-rose-500 text-white text-[10px] font-black uppercase tracking-wider shadow-lg shadow-rose-500/30">
+                        -{{ ((product.previousPrice - product.price) / product.previousPrice * 100).toFixed(0) }}%
+                    </span>
+                    <span *ngIf="!product.previousPrice"
+                        class="px-2.5 py-1 rounded-lg bg-emerald-500 text-white text-[10px] font-black uppercase tracking-wider shadow-lg shadow-emerald-500/30">
+                        New
+                    </span>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="flex flex-col flex-1 px-2">
+                <div class="flex justify-between items-center mb-3">
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">{{
+                        getCategoryName(product.category) }}</span>
+                    <div class="flex items-center text-amber-400 text-[10px]">
+                        <span class="mr-1">★</span>
+                        <span class="font-black text-slate-900">4.8</span>
+                    </div>
+                </div>
+
+                <h3 class="text-lg font-bold text-slate-900 leading-tight mb-4 min-h-[48px] line-clamp-2 transition-colors group-hover:text-blue-600"
+                    [routerLink]="['/shop', product.id || '']">
+                    {{ product.name }}
+                </h3>
+
+                <div class="mt-auto pt-6 flex flex-col gap-6">
+                    <div class="flex items-baseline justify-between">
+                        <div class="flex flex-col">
+                            <span class="text-2xl font-black text-slate-950 tracking-tighter">{{ product.price |
+                                currency }}</span>
+                            <span *ngIf="product.previousPrice"
+                                class="text-xs text-slate-300 font-bold line-through tracking-tight mt-[-2px]">
+                                {{ product.previousPrice | currency }}
+                            </span>
+                        </div>
+
+                        <!-- Detail Arrow (Subtle Feedback) -->
+                        <div class="h-10 w-10 border border-slate-100 rounded-2xl flex items-center justify-center text-slate-300 group-hover:text-blue-600 group-hover:border-blue-100 transition-all duration-300"
+                            [routerLink]="['/shop', product.id || '']">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                    d="M12 4v16m8-8H4" class="hidden group-hover:block" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                    d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Occasion Tag -->
+                    <div *ngIf="product.occasion"
+                        class="bg-blue-50/50 border border-blue-50 px-4 py-2.5 rounded-2xl flex items-center gap-3">
+                        <span class="flex h-1.5 w-1.5 rounded-full bg-blue-600"></span>
+                        <span class="text-[10px] font-black text-blue-700 uppercase tracking-widest">{{ product.occasion
+                            }}</span>
+                    </div>
+
+                    <a [routerLink]="['/shop', product.id]"
+                        class="block w-full bg-slate-950 text-white text-xs font-black py-4 rounded-2xl tracking-[0.1em] uppercase text-center transition-all duration-300 hover:bg-blue-600 active:scale-95 shadow-xl shadow-slate-100 cursor-pointer">
+                        Product Details
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Debug Panel Removed -->

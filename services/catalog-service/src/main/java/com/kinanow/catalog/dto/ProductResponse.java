@@ -15,6 +15,12 @@ public class ProductResponse {
     private String name;
     private String description;
     private BigDecimal price;
+    private BigDecimal previousPrice;
+    private Integer stock;
+    private String occasion;
     private String category;
     private String imageUrl;
+    private String model;
+    private Long merchantId;
+    private java.util.Map<String, Object> specifications;
 }

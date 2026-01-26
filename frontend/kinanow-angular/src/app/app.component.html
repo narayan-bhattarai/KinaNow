@@ -1,25 +1,287 @@
-<div class="min-h-screen bg-gray-50 text-gray-900 font-sans">
-  <nav class="bg-white shadow">
-    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-      <a routerLink="/" class="text-2xl font-bold text-blue-600">KinaNow</a>
+<ng-container *ngIf="showNavbar; else fullScreenLayout">
 
-      <div class="flex items-center space-x-4">
-        <a routerLink="/" class="text-gray-600 hover:text-blue-600">Home</a>
-        <a routerLink="/cart" class="text-gray-600 hover:text-blue-600">
-          Cart
-        </a>
-        <button class="bg-blue-600 text-white px-4 py-2 rounded">
-          Login
-        </button>
+  <!-- DASHBOARD LAYOUT (Admin / Merchant) -->
+  <ng-container *ngIf="(currentUser$ | async) as user; else websiteLayout">
+    <ng-container *ngIf="['ADMIN', 'MERCHANT'].includes(user.role); else websiteLayout">
+      <div class="flex h-screen bg-gray-50 font-sans overflow-hidden">
+        <!-- Sidebar (Left Fixed) -->
+        <app-sidebar class="flex-shrink-0"></app-sidebar>
+
+        <!-- Main Content Area (Right) -->
+        <div class="flex-1 flex flex-col min-w-0">
+          <!-- Top Dashboard Header -->
+          <header class="h-16 bg-white shadow-sm border-b border-gray-200 flex items-center justify-between px-6 z-10">
+            <!-- Left: Search or Breadcrumbs -->
+            <div class="flex items-center">
+              <div class="relative rounded-md shadow-sm">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <span class="text-gray-400 sm:text-sm">🔍</span>
+                </div>
+                <input type="text"
+                  class="focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md bg-gray-100 py-2 border-0 outline-none placeholder-gray-400"
+                  placeholder="Search...">
+              </div>
+            </div>
+
+            <!-- Right: Profile & Actions -->
+            <div class="flex items-center space-x-4">
+              <button class="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition relative">
+                <span class="text-xl">🔔</span>
+                <span class="absolute top-2 right-2 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-white"></span>
+              </button>
+
+              <div class="flex items-center space-x-3 ml-4 border-l pl-4 border-gray-200">
+                <div class="text-right hidden md:block">
+                  <p class="text-sm font-semibold text-gray-700">{{ user.full_name || 'Admin User' }}</p>
+                  <p class="text-xs text-gray-500 uppercase">{{ user.role }}</p>
+                </div>
+                <div
+                  class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold border border-blue-200 shadow-sm">
+                  {{ (user.full_name || user.role).charAt(0).toUpperCase() }}
+                </div>
+              </div>
+            </div>
+          </header>
+
+          <!-- Scrollable Main View -->
+          <main class="flex-1 overflow-y-auto p-6 bg-gray-50">
+            <router-outlet></router-outlet>
+
+            <footer class="mt-8 pt-8 border-t border-gray-200 text-center text-gray-400 text-sm pb-6">
+              &copy; 2026 KinaNow. All rights reserved.
+            </footer>
+          </main>
+        </div>
+      </div>
+    </ng-container>
+  </ng-container>
+
+  <ng-template #websiteLayout>
+    <!-- MOBILE WARNING FOR ADMIN (Professional Guard) -->
+    <div class="lg:hidden bg-slate-950" *ngIf="router.url.includes('admin')">
+      <div class="px-6 py-12 flex flex-col items-center text-center">
+        <div
+          class="w-16 h-16 bg-blue-500/10 rounded-3xl flex items-center justify-center mb-6 border border-blue-500/20">
+          <svg class="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+          </svg>
+        </div>
+        <h2 class="text-xl font-black text-white mb-2">Editor View Optimized</h2>
+        <p class="text-xs font-bold text-slate-500 uppercase tracking-widest leading-loose">The Admin Portal requires a
+          larger display for professional data management.</p>
+        <a routerLink="/"
+          class="mt-8 text-xs font-black text-blue-500 uppercase tracking-widest border-b border-blue-500/30 pb-1">Return
+          to Store</a>
       </div>
     </div>
-  </nav>
 
-  <main class="container mx-auto px-4 py-8">
-    <router-outlet></router-outlet>
-  </main>
+    <div class="min-h-screen bg-mesh text-slate-900 flex flex-col"
+      [class.hidden]="mobileMenuOpen && router.url.includes('admin')">
+      <!-- STATE-OF-THE-ART FLOATING NAVBAR -->
+      <nav
+        class="glass z-50 sticky top-0 md:top-6 md:mx-auto md:w-[94%] lg:w-[88%] md:rounded-[32px] border-b md:border border-slate-200/40 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.08)] transition-all duration-700">
+        <div class="container mx-auto px-6 lg:px-10 py-4 flex justify-between items-center">
 
-  <footer class="bg-white border-t mt-12 py-8 text-center text-gray-500">
-    &copy; 2024 KinaNow. All rights reserved.
-  </footer>
-</div>
+          <!-- MOBILE MENU BUTTON -->
+          <button (click)="toggleMobileMenu()"
+            class="lg:hidden p-3 text-slate-950 hover:bg-slate-100/50 rounded-2xl transition-all active:scale-90 relative z-[60]">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path *ngIf="!mobileMenuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                d="M4 8h16M4 16h16" />
+              <path *ngIf="mobileMenuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+
+          <!-- CLEAN BRAND IDENTITY -->
+          <a routerLink="/" (click)="closeMobileMenu()" class="group flex items-center h-16 md:h-20">
+            <img src="assets/logo-full.png" alt="KinaNow"
+              class="h-full w-auto object-contain transition-transform duration-700 group-hover:scale-[1.03]">
+          </a>
+
+          <!-- ARCHITECTURAL NAVIGATION -->
+          <div class="hidden lg:flex items-center space-x-10">
+            <a routerLink="/"
+              class="text-xs font-bold text-slate-400 hover:text-slate-950 uppercase tracking-[0.2em] transition-all relative group/link">
+              Shop
+              <span
+                class="absolute -bottom-2.5 left-1/2 w-0 h-1 bg-blue-600 rounded-full transition-all duration-500 group-hover/link:w-full group-hover/link:left-0"></span>
+            </a>
+            <a routerLink="/categories"
+              class="text-xs font-bold text-slate-400 hover:text-slate-950 uppercase tracking-[0.2em] transition-all relative group/link">
+              Collections
+              <span
+                class="absolute -bottom-2.5 left-1/2 w-0 h-1 bg-blue-600 rounded-full transition-all duration-500 group-hover/link:w-full group-hover/link:left-0"></span>
+            </a>
+            <a routerLink="/deals"
+              class="text-xs font-bold text-slate-400 hover:text-slate-950 uppercase tracking-[0.2em] transition-all relative group/link">
+              Explore
+              <span
+                class="absolute -bottom-2.5 left-1/2 w-0 h-1 bg-blue-600 rounded-full transition-all duration-500 group-hover/link:w-full group-hover/link:left-0"></span>
+            </a>
+          </div>
+
+          <!-- ACTIONS MATRIX -->
+          <div class="flex items-center space-x-4 md:space-x-6">
+            <a routerLink="/cart" (click)="closeMobileMenu()" id="navbar-cart-btn"
+              class="relative p-3.5 rounded-2xl bg-white border border-slate-100 hover:border-blue-100 hover:shadow-2xl hover:shadow-blue-900/5 transition-all duration-500 group active:scale-90">
+              <svg class="w-6 h-6 text-slate-950 group-hover:text-blue-600" fill="none" stroke="currentColor"
+                viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+              </svg>
+              <div *ngIf="(cartCount$ | async) as count"
+                class="absolute -top-1 -right-1 bg-blue-600 text-white text-[9px] font-black w-5 h-5 flex items-center justify-center rounded-full border-2 border-white shadow-xl animate-bounce-in">
+                {{ count }}
+              </div>
+            </a>
+
+            <div class="hidden md:flex items-center">
+              <ng-container *ngIf="(currentUser$ | async) as user; else guestNav">
+                <div class="flex items-center space-x-5 border-l border-slate-100 pl-5 ml-1">
+                  <div class="flex flex-col text-right cursor-pointer group" routerLink="/account">
+                    <span
+                      class="text-[8px] font-black text-slate-300 uppercase tracking-widest leading-none mb-1 group-hover:text-blue-500 transition-colors">Session</span>
+                    <span class="text-xs font-black text-slate-950 group-hover:text-blue-600 transition-colors">{{
+                      user.full_name || 'Member' }}</span>
+                  </div>
+                  <button (click)="logout()"
+                    class="h-10 w-10 flex items-center justify-center text-rose-500 bg-rose-50/50 rounded-xl hover:bg-rose-50 transition active:scale-90">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M17 16l4-4m0 0l-4-4m4 4H7" />
+                    </svg>
+                  </button>
+                </div>
+              </ng-container>
+              <ng-template #guestNav>
+                <div class="flex items-center space-x-2 border-l border-slate-100 pl-5 ml-1">
+                  <a routerLink="/login"
+                    class="px-5 py-3 text-xs font-bold text-slate-900 hover:text-blue-600 uppercase tracking-widest">Login</a>
+                  <a routerLink="/register"
+                    class="px-8 py-4 bg-slate-950 text-white text-[11px] font-black uppercase tracking-[0.2em] rounded-2xl hover:bg-blue-600 transition active:scale-95">Join
+                    Now</a>
+                </div>
+              </ng-template>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <!-- MOBILE MENU OVERLAY -->
+      <div *ngIf="mobileMenuOpen"
+        class="lg:hidden absolute top-full left-0 w-full bg-white border-b border-slate-100 shadow-2xl animate-fade-in-down overflow-hidden">
+        <div class="p-6 space-y-6">
+          <div class="flex flex-col space-y-4">
+            <a routerLink="/" (click)="closeMobileMenu()"
+              class="text-lg font-black text-slate-900 tracking-tight">Shop</a>
+            <a routerLink="/categories" (click)="closeMobileMenu()"
+              class="text-lg font-black text-slate-900 tracking-tight">Collections</a>
+            <a routerLink="/deals" (click)="closeMobileMenu()"
+              class="text-lg font-black text-slate-900 tracking-tight">Explore</a>
+          </div>
+          <div class="pt-6 border-t border-slate-50">
+            <ng-container *ngIf="(currentUser$ | async) as user; else guestNavMobile">
+              <div class="flex items-center justify-between" routerLink="/account" (click)="closeMobileMenu()">
+                <div class="flex items-center space-x-3">
+                  <div
+                    class="h-10 w-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 font-black">
+                    {{ (user.full_name || 'C').charAt(0) }}</div>
+                  <span class="font-black text-slate-900">{{ user.full_name }}</span>
+                </div>
+                <button (click)="logout(); closeMobileMenu()" class="p-2 text-rose-500"><svg class="w-6 h-6" fill="none"
+                    stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                  </svg></button>
+              </div>
+            </ng-container>
+            <ng-template #guestNavMobile>
+              <div class="grid grid-cols-2 gap-4">
+                <a routerLink="/login" (click)="closeMobileMenu()"
+                  class="btn-premium bg-slate-50 text-slate-900 text-xs py-3 border border-slate-100">Login</a>
+                <a routerLink="/register" (click)="closeMobileMenu()"
+                  class="btn-premium bg-blue-600 text-white text-xs py-3">Join Now</a>
+              </div>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+
+      <main class="flex-1 w-full flex flex-col">
+        <!-- Full width container for hero, but managed inside home component -->
+        <router-outlet></router-outlet>
+      </main>
+
+      <footer class="bg-white border-t border-slate-100 pt-20 pb-10 mt-auto">
+        <div class="container mx-auto px-6 lg:px-12">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+            <!-- Brand Column -->
+            <div class="col-span-1 lg:col-span-1">
+              <div class="mb-8">
+                <img src="assets/logo-full.png" alt="KinaNow"
+                  class="h-10 w-auto opacity-90 hover:opacity-100 transition-opacity cursor-pointer">
+              </div>
+              <p class="text-[11px] font-bold text-slate-400 leading-relaxed mb-6 uppercase tracking-wider">
+                The ultimate destination for premium essentials. Curated globally, delivered locally.
+              </p>
+            </div>
+
+            <!-- Links Column 1 -->
+            <div>
+              <h4 class="text-[10px] font-black text-slate-900 uppercase tracking-[0.2em] mb-8">Shop</h4>
+              <ul class="space-y-4">
+                <li><a class="text-xs font-bold text-slate-400 hover:text-blue-600 transition-colors cursor-pointer">All
+                    Collections</a></li>
+                <li><a class="text-xs font-bold text-slate-400 hover:text-blue-600 transition-colors cursor-pointer">New
+                    Arrivals</a></li>
+              </ul>
+            </div>
+
+            <!-- Links Column 2 -->
+            <div>
+              <h4 class="text-[10px] font-black text-slate-900 uppercase tracking-[0.2em] mb-8">Support</h4>
+              <ul class="space-y-4">
+                <li><a routerLink="/account/orders"
+                    class="text-xs font-bold text-slate-400 hover:text-blue-600 transition-colors cursor-pointer">Order
+                    Tracking</a></li>
+                <li><a
+                    class="text-xs font-bold text-slate-400 hover:text-blue-600 transition-colors cursor-pointer">Returns</a>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Links Column 3 -->
+            <div>
+              <h4 class="text-[10px] font-black text-slate-900 uppercase tracking-[0.2em] mb-8">Newsletter</h4>
+              <div class="relative">
+                <input type="text" placeholder="your@email.com"
+                  class="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-xs font-bold outline-none focus:border-blue-200 transition-colors">
+                <button
+                  class="absolute right-2 top-2 bg-slate-900 text-white p-1.5 rounded-lg hover:bg-black transition-colors">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                      d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="border-t border-slate-100 pt-10 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">&copy; 2026 KinaNow Global. All
+              rights reserved.</p>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </ng-template>
+
+</ng-container>
+
+<ng-template #fullScreenLayout>
+  <router-outlet></router-outlet>
+</ng-template>
+
+<app-snackbar></app-snackbar>

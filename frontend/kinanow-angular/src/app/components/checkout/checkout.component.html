@@ -1,0 +1,92 @@
+<div class="bg-gray-50 min-h-screen py-12">
+    <div class="container mx-auto px-4 max-w-6xl">
+        <h1 class="text-3xl font-bold text-gray-900 mb-8">Checkout</h1>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Left Column: Forms -->
+            <div class="md:col-span-2 space-y-6">
+                <!-- Shipping Details -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                    <h2 class="text-xl font-semibold mb-4">Shipping Details</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                            <input type="text" [(ngModel)]="shipping.fullName"
+                                class="w-full border-gray-300 rounded-lg p-2.5 focus:ring-blue-500 focus:border-blue-500 border">
+                        </div>
+                        <div class="col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                            <input type="text" [(ngModel)]="shipping.address"
+                                class="w-full border-gray-300 rounded-lg p-2.5 focus:ring-blue-500 focus:border-blue-500 border">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">City</label>
+                            <input type="text" [(ngModel)]="shipping.city"
+                                class="w-full border-gray-300 rounded-lg p-2.5 focus:ring-blue-500 focus:border-blue-500 border">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Zip Code</label>
+                            <input type="text" [(ngModel)]="shipping.zip"
+                                class="w-full border-gray-300 rounded-lg p-2.5 focus:ring-blue-500 focus:border-blue-500 border">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Details (Mock) -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                    <h2 class="text-xl font-semibold mb-4">Payment Method</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Card Number</label>
+                            <input type="text" [(ngModel)]="payment.cardNumber" placeholder="0000 0000 0000 0000"
+                                class="w-full border-gray-300 rounded-lg p-2.5 focus:ring-blue-500 focus:border-blue-500 border">
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Expiry</label>
+                                <input type="text" [(ngModel)]="payment.expiry" placeholder="MM/YY"
+                                    class="w-full border-gray-300 rounded-lg p-2.5 focus:ring-blue-500 focus:border-blue-500 border">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">CVC</label>
+                                <input type="text" [(ngModel)]="payment.cvc" placeholder="123"
+                                    class="w-full border-gray-300 rounded-lg p-2.5 focus:ring-blue-500 focus:border-blue-500 border">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Summary -->
+            <div class="md:col-span-1">
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 sticky top-4">
+                    <h2 class="text-xl font-semibold mb-4">Order Summary</h2>
+
+                    <div *ngIf="cart" class="space-y-3 mb-6">
+                        <div *ngFor="let item of cart.items" class="flex justify-between text-sm">
+                            <span class="text-gray-600">{{ item.productName }} (x{{ item.quantity }})</span>
+                            <span class="font-medium">\${{ item.price * item.quantity }}</span>
+                        </div>
+                        <hr class="border-gray-100 my-2">
+                        <div class="flex justify-between font-bold text-lg">
+                            <span>Total</span>
+                            <span>\${{ cart.total }}</span>
+                        </div>
+                    </div>
+
+                    <div *ngIf="!cart" class="text-center py-4 text-gray-500">
+                        Cart is empty
+                    </div>
+
+                    <button (click)="placeOrder()" [disabled]="loading || !cart"
+                        class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition flex justify-center items-center disabled:opacity-50">
+                        <span *ngIf="!loading">Place Order</span>
+                        <span *ngIf="loading"
+                            class="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></span>
+                    </button>
+                    <p class="text-xs text-gray-400 text-center mt-3">Secure Encrypted Payment</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

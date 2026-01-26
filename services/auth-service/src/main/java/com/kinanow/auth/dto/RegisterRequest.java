@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.util.UUID;
 
 @Data
 @Builder
@@ -15,4 +16,5 @@ public class RegisterRequest {
     private String email;
     private String password;
     private Role role; // Optional, default to CUSTOMER
+    private UUID merchantId;
 }
