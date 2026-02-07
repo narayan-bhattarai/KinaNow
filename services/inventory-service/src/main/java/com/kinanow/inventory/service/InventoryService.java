@@ -20,10 +20,10 @@ public class InventoryService {
     @KafkaListener(topics = "kinanow-order-events")
     @Transactional
     public void listen(OrderPlacedEvent event) {
-        log.info("Received OrderPlacedEvent for order: {}", event.getOrderNumber());
-        
+        log.info("Received OrderPlacedEvent for order: {}", event.getKnOrderId());
+
         if (event.getItems() == null || event.getItems().isEmpty()) {
-            log.warn("Order {} has no items to process", event.getOrderNumber());
+            log.warn("Order {} has no items to process", event.getKnOrderId());
             return;
         }
 
@@ -43,11 +43,11 @@ public class InventoryService {
                 if (inventory.getQuantity() >= item.getQuantity()) {
                     inventory.setQuantity(inventory.getQuantity() - item.getQuantity());
                     inventoryRepository.save(inventory);
-                    log.info("Deducted quantity for product {}. New stock: {}", 
+                    log.info("Deducted quantity for product {}. New stock: {}",
                             item.getProductId(), inventory.getQuantity());
                 } else {
-                    log.error("Insufficient stock for product {}. Order {} might need compensation transaction.", 
-                            item.getProductId(), event.getOrderNumber());
+                    log.error("Insufficient stock for product {}. Order {} might need compensation transaction.",
+                            item.getProductId(), event.getKnOrderId());
                     // In a real system, we would publish an OrderFailedEvent here!
                 }
             }

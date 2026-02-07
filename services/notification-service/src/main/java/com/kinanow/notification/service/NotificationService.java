@@ -11,9 +11,10 @@ public class NotificationService {
 
     @KafkaListener(topics = "kinanow-order-events")
     public void listen(OrderPlacedEvent event) {
-        log.info("Received Notification for Order - {}", event.getOrderNumber());
+        log.info("Received Notification for Order - {}", event.getKnOrderId());
         // Simulate sending email
         log.info("Sending email to {}", event.getEmail());
-        log.info("Email Body: Hi, your order {} for total amount {} has been placed successfully!", event.getOrderNumber(), event.getTotalAmount());
+        log.info("Email Body: Hi, your order {} for total amount {} has been placed successfully!",
+                event.getKnOrderId(), event.getTotalAmount());
     }
 }

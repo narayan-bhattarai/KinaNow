@@ -8,6 +8,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 @Document(collection = "products")
 @AllArgsConstructor
@@ -26,7 +27,7 @@ public class Product {
     private String category; // Simplify for now, could be separate collection
     private String imageUrl;
     private boolean active;
-    private Long merchantId;
+    private UUID merchantId;
     private String type;
     private String model;
 

@@ -11,23 +11,23 @@ export interface AddToCartRequest {
     price: number;
     imageUrl?: string;
     productName?: string;
-    merchantId?: string | number;
+    merchantId?: string;
 }
 
 export interface CartItem {
     id: number;
-    productId: string | number;
+    productId: string;
     skuCode: string;
     quantity: number;
     price: number;
     imageUrl?: string;
     productName?: string;
-    merchantId?: string | number;
+    merchantId?: string;
 }
 
 export interface Cart {
     id: number;
-    userId: number;
+    userId: string;
     items: CartItem[];
     total: number;
 }
@@ -216,7 +216,7 @@ export class CartService {
             this.recalculateTotal(cart);
             return cart;
         }
-        return { id: 0, userId: 0, items: [], total: 0 };
+        return { id: 0, userId: '', items: [], total: 0 };
     }
 
     private saveLocalCart(cart: Cart) {

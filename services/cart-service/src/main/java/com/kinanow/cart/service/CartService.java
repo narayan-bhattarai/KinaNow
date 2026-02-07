@@ -12,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -19,12 +21,12 @@ public class CartService {
 
     private final CartRepository cartRepository;
 
-    public Cart getCart(Long userId) {
+    public Cart getCart(UUID userId) {
         return cartRepository.findByUserId(userId)
                 .orElseGet(() -> createNewCart(userId));
     }
 
-    private Cart createNewCart(Long userId) {
+    private Cart createNewCart(UUID userId) {
         Cart cart = Cart.builder()
                 .userId(userId)
                 .items(new ArrayList<>())
@@ -33,7 +35,7 @@ public class CartService {
     }
 
     @Transactional
-    public Cart addToCart(Long userId, AddToCartRequest request) {
+    public Cart addToCart(UUID userId, AddToCartRequest request) {
         Cart cart = getCart(userId);
 
         Optional<CartItem> existingItem = cart.getItems().stream()
@@ -59,14 +61,14 @@ public class CartService {
     }
 
     @Transactional
-    public Cart removeFromCart(Long userId, String productId) {
+    public Cart removeFromCart(UUID userId, String productId) {
         Cart cart = getCart(userId);
         cart.getItems().removeIf(item -> item.getProductId().equals(productId));
         return cartRepository.save(cart);
     }
 
     @Transactional
-    public Cart updateQuantity(Long userId, String productId, Integer quantity) {
+    public Cart updateQuantity(UUID userId, String productId, Integer quantity) {
         Cart cart = getCart(userId);
         cart.getItems().stream()
                 .filter(item -> item.getProductId().equals(productId))
@@ -82,7 +84,7 @@ public class CartService {
     }
 
     @Transactional
-    public void clearCart(Long userId) {
+    public void clearCart(UUID userId) {
         Cart cart = getCart(userId);
         cart.getItems().clear();
         cartRepository.save(cart);

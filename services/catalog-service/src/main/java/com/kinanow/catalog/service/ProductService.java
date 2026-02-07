@@ -16,6 +16,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -138,7 +139,7 @@ public class ProductService {
                 .toList();
     }
 
-    public Page<ProductResponse> getProducts(Pageable pageable, String categoryId, Long merchantId) {
+    public Page<ProductResponse> getProducts(Pageable pageable, String categoryId, UUID merchantId) {
         Page<Product> page;
         if (categoryId != null && !categoryId.isEmpty()) {
             if (merchantId != null) {

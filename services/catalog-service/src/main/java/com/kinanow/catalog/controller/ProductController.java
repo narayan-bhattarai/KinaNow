@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/products")
@@ -35,7 +36,7 @@ public class ProductController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String category,
-            @RequestParam(required = false) Long merchantId) {
+            @RequestParam(required = false) UUID merchantId) {
         return productService.getProducts(org.springframework.data.domain.PageRequest.of(page, size), category,
                 merchantId);
     }

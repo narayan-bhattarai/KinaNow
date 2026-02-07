@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/v1/cart")
 @RequiredArgsConstructor
@@ -21,34 +23,39 @@ public class CartController {
     // before integrating full Security Context Holder.
 
     @GetMapping
-    public ResponseEntity<Cart> getCart(@RequestHeader("X-User-Id") Long userId) {
+    public ResponseEntity<Cart> getCart(@RequestHeader("X-User-Id") String userIdStr) {
+        UUID userId = UUID.fromString(userIdStr);
         return ResponseEntity.ok(cartService.getCart(userId));
     }
 
     @PostMapping("/items")
     public ResponseEntity<Cart> addToCart(
-            @RequestHeader("X-User-Id") Long userId,
+            @RequestHeader("X-User-Id") String userIdStr,
             @RequestBody AddToCartRequest request) {
+        UUID userId = UUID.fromString(userIdStr);
         return ResponseEntity.ok(cartService.addToCart(userId, request));
     }
 
     @DeleteMapping("/items/{productId}")
     public ResponseEntity<Cart> removeFromCart(
-            @RequestHeader("X-User-Id") Long userId,
+            @RequestHeader("X-User-Id") String userIdStr,
             @PathVariable String productId) {
+        UUID userId = UUID.fromString(userIdStr);
         return ResponseEntity.ok(cartService.removeFromCart(userId, productId));
     }
 
     @PutMapping("/items/{productId}")
     public ResponseEntity<Cart> updateQuantity(
-            @RequestHeader("X-User-Id") Long userId,
+            @RequestHeader("X-User-Id") String userIdStr,
             @PathVariable String productId,
             @RequestParam Integer quantity) {
+        UUID userId = UUID.fromString(userIdStr);
         return ResponseEntity.ok(cartService.updateQuantity(userId, productId, quantity));
     }
 
     @DeleteMapping
-    public ResponseEntity<Void> clearCart(@RequestHeader("X-User-Id") Long userId) {
+    public ResponseEntity<Void> clearCart(@RequestHeader("X-User-Id") String userIdStr) {
+        UUID userId = UUID.fromString(userIdStr);
         cartService.clearCart(userId);
         return ResponseEntity.ok().build();
     }

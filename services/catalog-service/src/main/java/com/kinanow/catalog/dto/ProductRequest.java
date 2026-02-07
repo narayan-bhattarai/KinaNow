@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 
+import java.util.UUID;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -17,7 +19,7 @@ public class ProductRequest {
     private BigDecimal price;
     private String category;
     private String imageUrl;
-    private Long merchantId;
+    private UUID merchantId;
     private String type;
     private String model;
     private java.util.Map<String, Object> specifications;

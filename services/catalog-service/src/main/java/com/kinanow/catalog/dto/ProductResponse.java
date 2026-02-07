@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 
+import java.util.UUID;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -21,6 +23,6 @@ public class ProductResponse {
     private String category;
     private String imageUrl;
     private String model;
-    private Long merchantId;
+    private UUID merchantId;
     private java.util.Map<String, Object> specifications;
 }
