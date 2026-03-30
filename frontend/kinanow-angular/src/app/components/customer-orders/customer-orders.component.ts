@@ -44,7 +44,7 @@ import { RouterModule } from '@angular/router';
                          <span [ngClass]="{
                             'bg-emerald-100 text-emerald-700': order.status === 'PAID',
                             'bg-blue-100 text-blue-700': order.status === 'CREATED',
-                            'bg-orange-100 text-orange-700': order.status === 'PENDING'
+                            'bg-slate-100 text-slate-700': order.status === 'PENDING'
                         }" class="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest inline-block">
                             {{ order.status }}
                         </span>
@@ -64,7 +64,7 @@ import { RouterModule } from '@angular/router';
                             
                             <div class="flex items-center gap-2 mt-4">
                                 <button class="px-4 py-2 rounded-lg bg-slate-900 text-white text-[10px] font-bold uppercase tracking-wider hover:bg-blue-600 transition-colors">Buy Again</button>
-                                <button class="px-4 py-2 rounded-lg border border-slate-200 text-slate-600 text-[10px] font-bold uppercase tracking-wider hover:bg-slate-50 transition-colors">Track Package</button>
+                                <a [routerLink]="['/order-tracking', order.knOrderId]" class="px-4 py-2 rounded-lg border border-slate-200 text-slate-600 text-[10px] font-bold uppercase tracking-wider hover:bg-slate-50 transition-colors">Track Package</a>
                             </div>
                         </div>
                         <div class="text-right">

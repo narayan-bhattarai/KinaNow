@@ -31,7 +31,12 @@ export class AppComponent {
   }
 
   get showNavbar(): boolean {
-    return this.router.url !== '/login' && this.router.url !== '/register';
+    const url = this.router.url;
+    return !url.includes('/login') && !url.includes('/register');
+  }
+
+  get isDashboardRoute(): boolean {
+    return this.router.url.startsWith('/admin');
   }
 
   logout() {

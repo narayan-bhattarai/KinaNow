@@ -118,7 +118,7 @@ export class ProductDetailsComponent implements OnInit {
       price: this.product.price,
       productName: this.product.name,
       imageUrl: this.product.imageUrl,
-      merchantId: this.product.merchantId
+      merchantId: this.product.merchantId ? String(this.product.merchantId) : undefined
     }).subscribe({
       next: () => {
         this.snackbar.show('Added to cart', 'success');

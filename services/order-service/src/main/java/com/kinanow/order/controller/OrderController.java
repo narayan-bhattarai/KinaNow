@@ -1,13 +1,14 @@
 package com.kinanow.order.controller;
 
 import com.kinanow.order.dto.OrderRequest;
-import com.kinanow.order.model.Order;
+import com.kinanow.order.model.*;
 import com.kinanow.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/orders")
@@ -19,14 +20,14 @@ public class OrderController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public String placeOrder(
-            @RequestHeader("X-User-Id") java.util.UUID userId,
+            @RequestHeader("X-User-Id") UUID userId,
             @RequestBody OrderRequest orderRequest) {
         return orderService.placeOrder(userId, orderRequest);
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<Order> getOrders(@RequestHeader("X-User-Id") java.util.UUID userId) {
+    public List<Order> getOrders(@RequestHeader("X-User-Id") UUID userId) {
         return orderService.getOrders(userId);
     }
 
@@ -38,7 +39,7 @@ public class OrderController {
 
     @GetMapping("/merchant")
     @ResponseStatus(HttpStatus.OK)
-    public List<Order> getMerchantOrders(@RequestHeader("X-Merchant-Id") java.util.UUID merchantId) {
+    public List<Order> getMerchantOrders(@RequestHeader("X-Merchant-Id") UUID merchantId) {
         return orderService.getMerchantOrders(merchantId);
     }
 
@@ -46,7 +47,7 @@ public class OrderController {
     @ResponseStatus(HttpStatus.OK)
     public void updateStatus(
             @PathVariable String knOrderId,
-            @RequestParam com.kinanow.order.model.OrderStatus status) {
+            @RequestParam OrderStatus status) {
         orderService.updateStatus(knOrderId, status);
     }
 
@@ -54,7 +55,7 @@ public class OrderController {
     @ResponseStatus(HttpStatus.OK)
     public void updateShippingStatus(
             @PathVariable String knOrderId,
-            @RequestParam com.kinanow.order.model.ShippingStatus status) {
+            @RequestParam ShippingStatus status) {
         orderService.updateShippingStatus(knOrderId, status);
     }
 
@@ -66,7 +67,7 @@ public class OrderController {
 
     @GetMapping("/{knOrderId}/history")
     @ResponseStatus(HttpStatus.OK)
-    public List<com.kinanow.order.model.OrderHistory> getOrderHistory(@PathVariable String knOrderId) {
+    public List<OrderHistory> getOrderHistory(@PathVariable String knOrderId) {
         return orderService.getOrderHistory(knOrderId);
     }
 }

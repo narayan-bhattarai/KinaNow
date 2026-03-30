@@ -16,21 +16,23 @@ export class OrderTrackingComponent implements OnInit {
 
   orderId = '';
   order: Order | null = null;
-  currentStep = 1;
+  orderHistory: any[] = [];
+  currentStep = 0;
   loading = true;
   error = '';
 
   steps = [
-    { label: 'Order Confirmed', description: 'We have received your order.' },
-    { label: 'Processing', description: 'Your order is being prepared.' },
-    { label: 'Shipped', description: 'Your order is on the way.' },
-    { label: 'Delivered', description: 'Package delivered.' }
+    { label: 'Paid', description: 'Payment confirmed. Preparing order.', status: 'PAID' },
+    { label: 'Shipped', description: 'Your order is in transit.', status: 'SHIPPED' },
+    { label: 'Delivered', description: 'Package successfully delivered.', status: 'DELIVERED' },
+    { label: 'Returned', description: 'Return request processed.', status: 'RETURNED' }
   ];
 
   ngOnInit() {
     this.orderId = this.route.snapshot.paramMap.get('id') || '';
     if (this.orderId) {
       this.loadOrder();
+      this.loadHistory();
     }
   }
 
@@ -50,13 +52,42 @@ export class OrderTrackingComponent implements OnInit {
     });
   }
 
+  loadHistory() {
+    this.orderService.getOrderHistory(this.orderId).subscribe({
+      next: (history) => {
+        this.orderHistory = history;
+        
+        // Revised Progress logic for new workflow
+        if (this.order?.status === 'CANCELLED') {
+           const regularStatuses = ['PAID', 'SHIPPED', 'DELIVERED', 'RETURNED'];
+           const reachedStatuses = history
+             .map((h: any) => h.status)
+             .filter((s: string) => regularStatuses.includes(s));
+           
+           if (reachedStatuses.length > 0) {
+             const maxStatus = reachedStatuses.reduce((a, b) => 
+               this.mapStatusToStep(a) > this.mapStatusToStep(b) ? a : b
+             );
+             this.currentStep = this.mapStatusToStep(maxStatus);
+           } else {
+             this.currentStep = 0;
+           }
+        }
+      },
+      error: (err) => {
+        console.error('Failed to load history', err);
+      }
+    });
+  }
+
   mapStatusToStep(status: string): number {
     switch (status) {
-      case 'CREATED': return 1;
-      case 'PAID': return 2;
-      case 'SHIPPED': return 3;
-      case 'DELIVERED': return 4;
-      default: return 1;
+      case 'PAID': return 1;
+      case 'SHIPPED': return 2;
+      case 'DELIVERED': return 3;
+      case 'RETURNED': return 4;
+      case 'CANCELLED': return 0;
+      default: return 0;
     }
   }
 }

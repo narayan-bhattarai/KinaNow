@@ -63,27 +63,93 @@ import { SnackbarService } from '../../services/snackbar.service';
                 <td class="p-4 font-bold text-slate-900">{{ order.totalAmount | currency }}</td>
                 <td class="p-4">
                    <select [ngModel]="order.status" (ngModelChange)="onStatusChange(order, $event)" 
-                           class="bg-white border border-slate-200 text-slate-700 text-[10px] font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-1 uppercase">
+                           class="bg-white border border-slate-200 text-slate-700 text-[10px] font-bold rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-1 uppercase">
                        <option value="CREATED">Created</option>
                        <option value="PAID">Paid</option>
                        <option value="SHIPPED">Shipped</option>
+                       <option value="DELIVERED">Delivered</option>
+                       <option value="RETURNED">Returned</option>
                        <option value="CANCELLED">Cancelled</option>
                    </select>
                 </td>
                 <td class="p-4">
-                    <button class="text-blue-600 hover:text-blue-800 text-xs font-bold uppercase">View</button>
+                    <button (click)="viewHistory(order)" 
+                            class="text-blue-600 hover:text-blue-800 text-[10px] font-black uppercase tracking-widest bg-blue-50/50 px-3 py-1.5 rounded-lg border border-transparent hover:border-blue-100 transition-all">
+                        View History
+                    </button>
                 </td>
               </tr>
               <tr *ngIf="orders.length === 0">
-                <td colspan="6" class="p-12 text-center text-slate-400 font-bold uppercase tracking-widest text-xs">No orders found in database</td>
+                <td colspan="7" class="p-12 text-center text-slate-400 font-bold uppercase tracking-widest text-xs">No orders found in database</td>
               </tr>
             </tbody>
           </table>
         </div>
       </div>
       
-      <!-- DEBUG PANEL -->
-      
+      <!-- PREMIUM HISTORY MODAL -->
+      <div *ngIf="showHistoryModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <!-- Backdrop -->
+          <div class="absolute inset-0 bg-slate-950/40 backdrop-blur-sm" (click)="closeHistory()"></div>
+          
+          <!-- Modal Content -->
+          <div class="bg-white rounded-[32px] w-full max-w-lg relative z-10 shadow-2xl overflow-hidden animate-bounce-in border border-slate-100">
+              <div class="p-8 border-b border-slate-50 flex justify-between items-center bg-slate-50/30">
+                  <div>
+                      <h2 class="text-xl font-black text-slate-900 tracking-tight">Order Lifecycle</h2>
+                      <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Ref: {{ selectedOrder?.knOrderId }}</p>
+                  </div>
+                  <button (click)="closeHistory()" class="p-2 hover:bg-white rounded-xl transition text-slate-400">
+                      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+                  </button>
+              </div>
+
+              <div class="p-8 max-h-[60vh] overflow-y-auto custom-scrollbar">
+                  <div *ngIf="loadingHistory" class="flex justify-center py-12">
+                      <div class="animate-spin h-8 w-8 border-2 border-blue-600 border-t-transparent rounded-full"></div>
+                  </div>
+
+                  <div *ngIf="!loadingHistory && history.length > 0" class="space-y-8 relative">
+                      <!-- Timeline Line -->
+                      <div class="absolute left-3 top-2 bottom-2 w-0.5 bg-slate-300"></div>
+
+                      <div *ngFor="let entry of history; let i = index" class="relative pl-12 group">
+                          <!-- Point Display -->
+                          <div class="absolute left-0 top-1.5 w-6 h-6 rounded-full flex items-center justify-center transition-all duration-700 z-10"
+                               [ngClass]="{
+                                   'bg-blue-600 border-4 border-blue-100 shadow-md': i === 0,
+                                   'bg-white border-4 border-slate-400': i !== 0
+                               }">
+                          </div>
+                          
+                          <div class="p-4 rounded-3xl transition-all duration-500"
+                               [ngClass]="{'bg-slate-50 border border-slate-200 shadow-sm' : i === 0}">
+                              <div class="flex items-center justify-between mb-1.5">
+                                  <span class="text-sm font-black tracking-widest uppercase transition-colors"
+                                        [ngClass]="i === 0 ? 'text-blue-700' : 'text-slate-900'">
+                                      {{ entry.status }}
+                                  </span>
+                                  <span class="text-[10px] font-black text-slate-500 uppercase font-mono tracking-tighter">{{ entry.createdAt | date:'MMM d, HH:mm' }}</span>
+                              </div>
+                              <p class="text-[13px] font-bold leading-relaxed transition-colors"
+                                 [ngClass]="i === 0 ? 'text-slate-800' : 'text-slate-600'">
+                                  Transaction status transitioned to {{ entry.status | lowercase }}. 
+                                  Auto-logged by system core.
+                              </p>
+                          </div>
+                      </div>
+                  </div>
+
+                  <div *ngIf="!loadingHistory && history.length === 0" class="text-center py-12">
+                      <p class="text-sm font-bold text-slate-400 uppercase tracking-widest">No history logs currently available.</p>
+                  </div>
+              </div>
+
+              <div class="p-6 bg-slate-50/50 border-t border-slate-50 flex justify-end">
+                  <button (click)="closeHistory()" class="btn-premium bg-slate-950 text-white text-[10px] py-3 px-8">Close View</button>
+              </div>
+          </div>
+      </div>
 
 
     </div>
@@ -95,6 +161,13 @@ export class AdminOrdersComponent implements OnInit {
   private snackbar = inject(SnackbarService);
   orders: Order[] = [];
   searchTerm: string = '';
+  
+  // History Modal Logic
+  showHistoryModal = false;
+  loadingHistory = false;
+  selectedOrder: Order | null = null;
+  history: any[] = [];
+
   debugStatus = 'Initializing...';
   debugError = '';
 
@@ -112,6 +185,19 @@ export class AdminOrdersComponent implements OnInit {
   }
 
   onStatusChange(order: Order, newStatus: string) {
+    const currentStatus = order.status;
+
+    // BUSINESS RULES VALIDATION
+    if (newStatus === 'CANCELLED' && (currentStatus === 'SHIPPED' || currentStatus === 'DELIVERED')) {
+        this.snackbar.show('Forbidden: Order cannot be cancelled once shipped.', 'error');
+        return;
+    }
+
+    if (newStatus === 'RETURNED' && currentStatus !== 'DELIVERED') {
+        this.snackbar.show('Forbidden: Order must be delivered before initiating a return.', 'error');
+        return;
+    }
+
     this.orderService.updateOrderStatus(order.knOrderId, newStatus).subscribe({
       next: () => {
         order.status = newStatus;
@@ -144,5 +230,30 @@ export class AdminOrdersComponent implements OnInit {
         this.debugStatus = 'Failed.';
       }
     });
+  }
+
+  viewHistory(order: Order) {
+    this.selectedOrder = order;
+    this.showHistoryModal = true;
+    this.loadingHistory = true;
+    this.history = [];
+
+    this.orderService.getOrderHistory(order.knOrderId).subscribe({
+        next: (data) => {
+            this.history = data.sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+            this.loadingHistory = false;
+        },
+        error: (err) => {
+            console.error('Failed to load history', err);
+            this.loadingHistory = false;
+            this.snackbar.show('Failed to load order history', 'error');
+        }
+    });
+  }
+
+  closeHistory() {
+    this.showHistoryModal = false;
+    this.selectedOrder = null;
+    this.history = [];
   }
 }
